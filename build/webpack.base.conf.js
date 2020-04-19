@@ -74,6 +74,14 @@ module.exports = {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
+      },
+      //{       使用less 时需要修改配置的地方
+      //         test: /\.less$/,
+      //         loader: "style-loader!css-loader!less-loader"
+      //       }
+      {
+        test: /\.less$/,
+        loader: "style-loader!css-loader!less-loader"
       }
     ]
   },
