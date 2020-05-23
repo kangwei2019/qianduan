@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+
+    .ss {
+      color: red;
+    }
+  </style>
+
+</head>
+<body>
+<div id="app">
+  <ul>
+    <li v-for="(item,index) in message"
+        :class="{ss: currentIndex===index}"
+        @click="liClick(index)">
+      {{index}}.{{item}}
+    </li>
+  </ul>
+</div>
+
+<script src="../js/vue.js"></script>
+<script>
+  const app = new Vue({
+    el: "#app",
+    data: {
+      message: ["海王", "三国演义", "时代", "水浒传"],
+      currentIndex: 0
+
+    },
+    methods:{
+      liClick(index){
+        return this.currentIndex=index;
+      }
+    }
+
+
+  })
+</script>
+</body>
+</html>

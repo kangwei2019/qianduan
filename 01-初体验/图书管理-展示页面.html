@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<div style="width: 800px;height:400px;border:1px solid red;margin: auto;">
+    <center><h2>图书借阅系统</h2></center>
+    <div>
+        图书分类：<select id="bookTypeList">
+        <option value="">请选择</option>
+        <option value="1">科技</option>
+        <option value="2">少儿</option>
+        <option value="3">艺术</option>
+    </select>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        图书名称：<input id="keyword"/>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        是否借阅：<select id="isBorrowList">
+        <option value="">-请选择-</option>
+        <option value="1">已借阅</option>
+        <option value="0">未借阅</option>
+    </select>
+        &nbsp;
+        &nbsp;
+        <button id="query">查询</button>
+    </div>
+    <div style="width: 800px;text-align: right;">
+        当前用户：<span style="width: 20px">admin</span>
+        &nbsp;
+        &nbsp;
+        <a href="">退出</a>
+    </div>
+    <table border="1px" cellspacing="0px" align="center" width="800">
+        <tr>
+
+            <th>图书编号</th>
+            <th>图书分类</th>
+            <th>图书名称</th>
+            <th>作者</th>
+            <th>出版社</th>
+            <th>操作</th>
+        </tr>
+        <tbody id="table"></tbody>
+    </table>
+    <div style="width: 800px;text-align: right;">
+        <a id="forword" href="javascript:void(0)">上一页 ◀</a>
+        <span id="yeshu"></span>
+        <a id="next" href="javascript:void(0)">▶ 下一页</a>
+        <span>共10页</span>
+        到第<input id="page"/>页
+        <button id="yes">确定</button>
+    </div>
+</div>
+
+</body>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    var page = 1;
+    var limit = 2;
+    var pages;
+    $("#query").click(function () {
+        $("#table").empty();
+        start();
+    });
+
+    $("#forword").click(function () {
+        page = page == 1 ? 1 : page - 1;
+        $("#table").empty();
+        start();
+    });
+
+    $("#next").click(function () {
+        page = page == pages ? page : page + 1;
+
+        $("#table").empty();
+        start();
+    })
+
+    $(document).off("click", ".ys").on("click", ".ys", function () {
+        console.log("a");
+        page = $(this).text();
+
+        $("#table").empty();
+        start();
+    })
+
+    $("#yes").click(function () {
+        page = $("#page").val();
+        $("#table").empty();
+        start();
+
+    })
+
+
+    function start() {
+
+        $.ajax({
+            url: "http://localhost:8009/springBoot/bookInfoList",//网址
+            data: {
+                "bookTypeList": $("#bookTypeList").val(),
+                "keyword": $("#keyword").val(),
+                "isBorrowList": $("#isBorrowList").val(),
+                "page": page,
+                "limit": limit
+            },//{"name":"tom","age":8} 传出去的参数
+            type: "get",//"post" 发送方式
+            dataType: "json",//"text" 返回数据的格式
+            async: true,//是否是异步 ,true异步发送不用等回来的数据,可以再次提交.false就是同步要等到请求返回后才能再次提交
+            success: function (data) {
+                console.log(typeof (data));
+                console.log(data);
+                console.log(data.length);
+                pages = data['pages'];
+                for (var i = 0; i < data.list.length; i++) {
+                    $("#table").append("<tr><td>" +
+                        data['list'][i]['bookCode'] + "</td>" +
+                        "<td>" + data['list'][i]['bookType'] + "</td>" +
+                        "<td>" + data['list'][i]['bookName'] + "</td>" +
+                        "<td>" + data['list'][i]['bookAuthor'] + "</td>" +
+                        "<td>" + data['list'][i]['publishPress'] + "</td>" +
+                        "<td>" + (data['list'][i]['isBorrow']==1?"<span style='color: red'>已借阅</span>":"<a href='javascript:void(0)' style='color: blue'>申请借阅</a>") + "</td>" +
+                        "</tr>")
+                }
+                $("#yeshu").empty();
+                for (var i = 0; i < pages; i++) {
+        $("#yeshu").append("<a class='ys' href='javascript:void(0)'>" + (i + 1) + "</a>&nbsp;&nbsp;")
+    }
+
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        console.log(XMLHttpRequest.status);
+        console.log(XMLHttpRequest.readyState);
+        console.log(errorThrown);
+        console.log(textStatus);
+
+    }
+    });
+    }
+
+    start();
+</script>
+</html>

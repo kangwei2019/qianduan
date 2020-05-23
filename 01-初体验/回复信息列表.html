@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div style="width: 800px;height: 600px;border:1px solid red;margin: auto;">
+  <h2>回复信息列表</h2>
+  <div style="width: 800px;text-align: right;border:1px solid red;margin: auto;">
+    <a id="tianjia" href="javascript:void(0)">添加回复</a> <a id="fanhui" href="帖子列表展示页面.html">返回帖子列表</a>
+  </div>
+  <table border="1px" cellspacing="0px" align="center" width="800">
+    <tr>
+
+      <th>回复内容</th>
+      <th>回复昵称</th>
+      <th>发布时间</th>
+
+    </tr>
+    <tbody id="table"></tbody>
+
+  </table>
+</div>
+</body>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<script>
+  let invid;
+  $("#tianjia").click(function () {
+    window.location.href = "添加回复.html?invid="+invid;
+  })
+  $(function () {
+    invid = getUrlParam("id");
+    console.log(invid);
+    start(invid);
+  })
+
+  function getUrlParam(name) {
+
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+
+    var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+
+    if (r != null) return unescape(r[2]);
+
+    return null; //返回参数值
+
+  }
+  function start(invid) {
+
+    $.ajax({
+      url: "http://localhost:8009/springBoot/queryReplyDetailList",//网址
+      data: {
+        "invid": invid,
+      },//{"name":"tom","age":8} 传出去的参数
+      type: "get",//"post" 发送方式
+      dataType: "json",//"text" 返回数据的格式
+      async: true,//是否是异步 ,true异步发送不用等回来的数据,可以再次提交.false就是同步要等到请求返回后才能再次提交
+      success: function (data) {
+        console.log(typeof (data));
+        console.log(data);
+
+        for (var i = 0; i < data.length; i++) {
+          var date = data[i]['createdate'];
+          let timeChange1 = timeChange(date);
+
+          $("#table").append("<tr><td>" +
+              data[i]['content'] + "</td>" +
+              "<td>" + data[i]['author'] + "</td>" +
+              "<td>" + timeChange1 + "</td>" +
+              "</tr>")
+        }
+
+
+      },
+      error: function (XMLHttpRequest, textStatus, errorThrown) {
+        console.log(XMLHttpRequest.status);
+        console.log(XMLHttpRequest.readyState);
+        console.log(errorThrown);
+        console.log(textStatus);
+
+      }
+    });
+  }
+  function timeChange(time) {
+    var date = new Date(time);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+    var D = date.getDate() + ' ';
+    var h = date.getHours() + ':';
+    var m = date.getMinutes() < 10 ? '0'+date.getMinutes() + ':' : date.getMinutes() + ':';
+    var s = date.getSeconds();
+    return Y+M+D;
+  };
+</script>
+</html>

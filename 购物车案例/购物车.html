@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    table {
+      border: 1px solid #e9e9e9;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    th, td {
+      padding: 8px 16px;
+      border: 1px solid #e9e9e9;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f7f7f7;
+      color: #5c6b77;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div v-if="books.length!=0">
+  <table >
+    <thead>
+    <tr>
+      <td></td>
+      <th>书籍名称</th>
+      <th>出版日期</th>
+      <th>价格</th>
+      <th>购买数量</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr v-for="(item,index) in books">
+      <td>{{index+1}}</td>
+      <td>{{item.name}}</td>
+      <td>{{item.time}}</td>
+      <td>{{item.price|priceChange}}</td>
+      <td>
+        <button @click="jian(index)" :disabled="item.count <= 1">-</button>
+        {{item.count}}
+        <button @click="jia(index)">+</button>
+      </td>
+      <td>
+        <button @click="yichu(index)">移除</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <h2>总价格:{{allPrice|priceChange}}</h2>
+  </div>
+  <div v-else="">购物车为空</div>
+</div>
+
+<script src="../js/vue.js"></script>
+<script>
+
+  const app = new Vue({
+    el: "#app",
+
+    data: {
+      books: [{name: "三国", time: "2019-10-27", price: 90.00, count: 1}, {
+        name: "三国",
+        time: "2019-10-27",
+        price: 90.00,
+        count: 1
+      }, {
+        name: "三国",
+        time: "2019-10-27",
+        price: 90.00,
+        count: 1
+      }]
+
+    }
+    ,//过滤器
+    filters: {
+      priceChange(price) {
+        return "￥" + price.toFixed(2);
+      }
+    }
+    ,
+    methods: {
+      jia(index) {
+        return this.books[index].count++;
+      },
+      jian(index) {
+        return this.books[index].count--;
+      },
+      yichu(index) {//移除自己
+        this.books.splice(index,1);
+      }
+    },
+    computed: {
+      allPrice() {
+        let allPrice = 0;
+        for (let i = 0; i < this.books.length; i++) {
+          allPrice += this.books[i].price * this.books[i].count;
+        }
+        return allPrice;
+      }
+    }
+
+
+  })
+</script>
+</body>
+</html>

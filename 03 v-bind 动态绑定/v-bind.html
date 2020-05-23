@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div id="app">
+  {{message}}
+  <img v-bind:src="src" alt="">
+<!--  简写-->
+  <img :src="src" alt="">
+
+
+</div>
+
+<script src="../js/vue.js"></script>
+<script>
+  const app = new Vue({
+    el: "#app",
+    data: {
+      message: "你好啊",
+      src:"https://i0.hdslb.com/bfs/sycp/creative_img/201910/744f8be091b80f2f35c14012ded2c9a7.jpg"
+    }
+
+
+  })
+</script>
+</body>
+</html>

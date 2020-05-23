@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div style="width: 800px;height: 600px;border:1px solid red;margin: auto;">
+  <h2>帖子列表</h2>
+
+  <div>帖子标题:<input id="name"/>&nbsp;&nbsp;<button id="query">搜索</button>
+  </div>
+
+  <table border="1px" cellspacing="0px" align="center" width="800">
+    <tr>
+
+      <th>标题</th>
+      <th>内容摘要</th>
+      <th>作者</th>
+      <th>发布时间</th>
+      <th>操作</th>
+
+    </tr>
+    <tbody id="table"></tbody>
+
+  </table>
+  <div style="width: 800px;text-align: right;">
+    <a id="sy" href="javascript:void(0)">首页</a>
+    <span>|</span>
+    <a id="forword" href="javascript:void(0)">◀上一页 </a>
+    <span>|</span>
+    <a id="next" href="javascript:void(0)"> 下一页▶</a>
+    <span>|</span>
+    <a id="wy" href="javascript:void(0)">尾页</a>
+    &nbsp;第<span id="djy">几</span>页<span>/</span>共<span id="gjy">几</span>页&nbsp;(共<span id="gjt">几</span>条)
+  </div>
+</div>
+</body>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<script>
+  let page = 1;
+  let limit = 5;
+  let pages;
+  //条件查询按钮
+  $("#query").click(function () {
+    $("#table").empty();
+    start();
+  });
+  //前一页
+  $("#forword").click(function () {
+    page = page == 1 ? 1 : page - 1;
+    $("#table").empty();
+    start();
+  });
+  //后一页
+  $("#next").click(function () {
+    page = page == pages ? page : page + 1;
+
+    $("#table").empty();
+    start();
+  })
+  //元素后添加再绑定事件
+  $(document).off("click", ".ys").on("click", ".ys", function () {
+    page = $(this).text();
+
+    $("#table").empty();
+    start();
+  })
+
+  $(document).off("click", ".ck").on("click", ".ck", function () {
+
+    const i = $(this).next().text();
+    console.log(i);
+    window.location.href = "回复信息列表.html?id="+i;
+
+  })
+
+
+  //指定跳转到哪一页
+  $("#yes").click(function () {
+    page = $("#page").val();
+    $("#table").empty();
+    start();
+
+  })
+
+  $("#sy").click(function () {
+    page = 1;
+    $("#table").empty();
+    start();
+  })
+
+  $("#wy").click(function () {
+    page = pages;
+    $("#table").empty();
+    start();
+  })
+
+
+
+
+  function start() {
+
+    $.ajax({
+      url: "http://localhost:8009/springBoot/queryInvitations",//网址
+      data: {
+        "keyword": $("#name").val(),
+        "page": page,
+        "limit": limit
+      },//{"name":"tom","age":8} 传出去的参数
+      type: "get",//"post" 发送方式
+      dataType: "json",//"text" 返回数据的格式
+      async: true,//是否是异步 ,true异步发送不用等回来的数据,可以再次提交.false就是同步要等到请求返回后才能再次提交
+      success: function (data) {
+        console.log(typeof (data));
+        console.log(data);
+        console.log(data.length);
+        pages = data['pages'];
+
+        for (var i = 0; i < data.list.length; i++) {
+          var date = data['list'][i]['createdate'];
+          let timeChange1 = timeChange(date);
+
+          $("#table").append("<tr><td>" +
+              data['list'][i]['title'] + "</td>" +
+              "<td>" + data['list'][i]['summary'] + "</td>" +
+              "<td>" + data['list'][i]['author'] + "</td>" +
+              "<td>" + timeChange1 + "</td>" +
+              "<td><a class='ck' href='javascript:void(0)'>查看回复</a><span style='display: none'>"+data['list'][i]['id']+"</span><span>||</span><a class='sc' href='javascript:void(0)'>删除</a></td>" +
+              "</tr>")
+        }
+        $("#yeshu").empty();
+        for (var i = 0; i < pages; i++) {
+          $("#yeshu").append("<a class='ys' href='javascript:void(0)'>" + (i + 1) + "</a>&nbsp;&nbsp;")
+        }
+
+        $("#djy").empty();
+        $("#djy").append(data['pageNum']);
+        $("#gjy").empty();
+        $("#gjy").append(data['pages']);
+        $("#gjt").empty();
+        $("#gjt").append(data['total']);
+
+      },
+      error: function (XMLHttpRequest, textStatus, errorThrown) {
+        console.log(XMLHttpRequest.status);
+        console.log(XMLHttpRequest.readyState);
+        console.log(errorThrown);
+        console.log(textStatus);
+
+      }
+    });
+
+
+  }
+
+  function timeChange(time) {
+    var date = new Date(time);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+    var D = date.getDate() + ' ';
+    var h = date.getHours() + ':';
+    var m = date.getMinutes() < 10 ? '0'+date.getMinutes() + ':' : date.getMinutes() + ':';
+    var s = date.getSeconds();
+    return Y+M+D;
+  };
+  start();
+</script>
+</html>

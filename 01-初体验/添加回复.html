@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div style="width: 800px;height: 600px;border:1px solid red;margin: auto;">
+  <form method="post" action="javascript:void(0)">
+    <h2>添加回复</h2>
+
+    <p>回复内容：<input id="content" type="text"></p>
+    <p>回复昵称：<input id="author" type="text"></p>
+
+    <input type="submit" id="tijiao" name="button" value="提交">
+    <a href="帖子列表展示页面.html"/>返回
+
+  </form>
+</div>
+</body>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<script>
+  let invid;
+  $(function () {
+     invid = getUrlParam("invid");
+    console.log(invid);
+  })
+
+  $("#tijiao").click(function () {
+    start(invid);
+  })
+
+  function getUrlParam(name) {
+
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+
+    var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+
+    if (r != null) return unescape(r[2]);
+
+    return null; //返回参数值
+
+  }
+
+  function start(invid) {
+
+    $.ajax({
+      url: "http://localhost:8009/springBoot/addReplyDetailList",//网址
+      data: {
+        "invid": invid,
+        "content":$("#content").val(),
+        "author":$("#author").val()
+      },//{"name":"tom","age":8} 传出去的参数
+      type: "post",//"post" 发送方式
+      dataType: "json",//"text" 返回数据的格式
+      async: true,//是否是异步 ,true异步发送不用等回来的数据,可以再次提交.false就是同步要等到请求返回后才能再次提交
+      success: function (data) {
+        console.log(typeof (data));
+        console.log(data);
+        console.log(data["message"]);
+
+
+      },
+      error: function (XMLHttpRequest, textStatus, errorThrown) {
+        console.log(XMLHttpRequest.status);
+        console.log(XMLHttpRequest.readyState);
+        console.log(errorThrown);
+        console.log(textStatus);
+
+      }
+    });
+  }
+</script>
+</html>
