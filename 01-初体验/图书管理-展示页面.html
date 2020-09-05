@@ -49,9 +49,9 @@
     </table>
     <div style="width: 800px;text-align: right;">
         <a id="forword" href="javascript:void(0)">上一页 ◀</a>
-        <span id="yeshu"></span>
+        <span id="yeshu">站位页数</span>
         <a id="next" href="javascript:void(0)">▶ 下一页</a>
-        <span>共10页</span>
+      共<span id="gjy">10</span>页
         到第<input id="page"/>页
         <button id="yes">确定</button>
     </div>
@@ -81,7 +81,7 @@
         start();
     })
 
-    $(document).off("click", ".ys").on("click", ".ys", function () {
+    $(document).off("click", "#ys").on("click", "#ys", function () {
         console.log("a");
         page = $(this).text();
 
@@ -128,9 +128,10 @@
                 }
                 $("#yeshu").empty();
                 for (var i = 0; i < pages; i++) {
-        $("#yeshu").append("<a class='ys' href='javascript:void(0)'>" + (i + 1) + "</a>&nbsp;&nbsp;")
+        $("#yeshu").append("<a id='ys' href='javascript:void(0)'>" + (i + 1) + "</a>&nbsp;&nbsp;")
     }
-
+              $("#gjy").empty();
+              $("#gjy").append(pages)
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
         console.log(XMLHttpRequest.status);
